@@ -11,7 +11,10 @@ export const solve_puente = async (data, filename) => {
 
     const body = JSON.stringify({data, filename});
 
-    const response = await axios.post(`${api_url}/solve_puente`, body, config);;
-
-    return response.data;
+    try {
+        const response = await axios.post(`${api_url}/solve_puente`, body, config);
+        return {data: response.data, error: false};
+    } catch (error) {
+        return {data: error.response.data, error: true};
+    }
 }

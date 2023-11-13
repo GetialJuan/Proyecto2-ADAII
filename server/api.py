@@ -17,7 +17,7 @@ def solve_PUEnTe():
         file_path = f"./PUEnTe/dzn_files/{filename}.dzn"
         
         write_json_to_dzn(data, file_path)
-        
+        print("File written")
         result = PUEnTe(file_path)
         
         return jsonify({"result":result, "filename":filename}), 200

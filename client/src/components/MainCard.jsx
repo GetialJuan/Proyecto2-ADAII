@@ -1,36 +1,87 @@
 import { useState } from "react"
-import SimpleAlert from "./SimpleAlert"
 import { readFile } from "../utils/readFile"
 import { solve_puente } from "../api/api"
+import FailedAlert from "./alerts/FailedAlert"
+import LoadingAlert from "./alerts/LoadingAlert"
 
 const MainCard = () => {
 
     const [fileInput, setFileInput] = useState(null)
-    const [error, setError] = useState(false)
+    const [alert, setAlert] = useState({ show: false, message: "", type: "" })
+    const [dataInput, setDataInput] = useState({})
+    const [filename, setFilename] = useState("")
+    const [dataOutput, setDataOutput] = useState({})
 
-    const onClickHandler = (e) => {
+    const onClickHandler = async (e) => {
         e.preventDefault()
         if (fileInput == null) {
-            setError(true)
-            setTimeout(() => {
-                setError(false)
-            }, 2000)
+            setAlert({ show: true, message: "No se ha seleccionado ningun archivo", type: "error" })
+
         }
         else {
-            const filename = fileInput.name.split('.')[0];
-            readFile(fileInput).then(async (data) => {
-                const response = await solve_puente(data, filename)
-                console.log(response)
-            }).catch((error) => {
-                console.error(error);
-            });
+            setAlert({ show: true, message: "Cargando...", type: "loading" })
+            const { data, error } = await solve_puente(dataInput, filename)
+            setAlert({ show: error, message: "Failed", type: "error" })
+            if (!error) {
+                setDataOutput(data)
+            }
+            else {
+                console.log(data)
+            }
         }
 
     }
 
+    const selectFile = (e) => {
+        const file = e.target.files[0]
+        setFileInput(file)
+        if (file != null) {
+            setAlert({ show: false, message: "", type: "" })
+            setFilename(file.name.split(".")[0])
+            readFile(file).then((data) => {
+                setDataInput(data)
+            }).catch((error) => {
+                setAlert({ show: true, message: "Error al leer el archivo", type: "error" })
+            });
+        }
+        else {
+            setAlert({ show: true, message: "No se ha seleccionado ningun archivo", type: "error" })
+        }
+
+    }
+
+    const jsonToLines = (json, indent = 0) => {
+        let result = '';
+
+        // Helper function to add indentation
+        const addIndentation = (count) => ' '.repeat(count);
+
+        // Loop through each key in the JSON object
+        for (let key in json) {
+            if (json.hasOwnProperty(key)) {
+                const value = json[key];
+
+                // Check if the value is an object and handle it recursively
+                if (typeof value === 'object' && value !== null) {
+                    result += addIndentation(indent) + key + ':\n';
+                    result += jsonToLines(value, indent + 2); // Increase the indentation for nested objects
+                } else {
+                    // Concatenate key and value with a newline character
+                    result += addIndentation(indent) + key + ': ' + value + '\n';
+                }
+            }
+        }
+
+        return result;
+    }
+
     return (
         <div>
-            {error && < SimpleAlert />}
+            <div className="p-5">
+                {alert.show && alert.type === "error" && <FailedAlert message={alert.message} />}
+                {alert.show && alert.type === "loading" && <LoadingAlert />}
+            </div>
+
             <div className="isolate bg-white px-6 py-24 sm:py-32 lg:px-8">
                 <div
                     className="absolute inset-x-0 top-[-10rem] -z-10 transform-gpu overflow-hidden blur-3xl sm:top-[-20rem]"
@@ -46,7 +97,7 @@ const MainCard = () => {
                 </div>
                 <div className="mx-auto max-w-2xl text-center">
                     <h2 className="text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl">El Problema de la Planificacion de Unidades de
-Energia Termica</h2>
+                        Energia Termica</h2>
                     <p className="mt-2 text-lg leading-8 text-gray-600">
                         Interfaz grafica para resolver una determinada instancia PUEnTe
                     </p>
@@ -58,14 +109,41 @@ Energia Termica</h2>
 
                             <label className="block mb-2 text-sm font-medium text-gray-900 dark:text-white" htmlFor="file_input">Sube tu entrada en un txt</label>
                             <input className="block w-full text-sm text-gray-900 border border-gray-300 rounded-lg cursor-pointer bg-gray-50 dark:text-gray-400 focus:outline-none dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400" id="file_input" type="file"
-                                onChange={(e) => {
-                                    e.preventDefault()
-                                    setFileInput(e.target.files[0])
-                                }}
+                                onChange={(e) => selectFile(e)}
                             >
                             </input>
 
 
+                        </div>
+                    </div>
+
+                    <div>
+                        <div className="mt-6">
+                            <label className="block text-sm font-medium text-gray-700 dark:text-white">
+                                Datos Leidos
+                            </label>
+                            <div className="mt-1">
+                                <textarea
+                                    disabled
+                                    value={jsonToLines(dataInput)}
+                                    rows={10}
+                                    className="block w-full border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                                />
+                            </div>
+                        </div>
+
+                        <div>
+                            <label className="block text-sm font-medium text-gray-700 dark:text-white">
+                                Datos de Salida
+                            </label>
+                            <div className="mt-1">
+                                <textarea
+                                    disabled
+                                    value={jsonToLines(dataOutput)}
+                                    rows={10}
+                                    className="block w-full border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                                />
+                            </div>
                         </div>
                     </div>
 
