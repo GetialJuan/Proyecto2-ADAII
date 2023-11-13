@@ -7,7 +7,7 @@ const FailedAlert = ({ message }) => {
   const handleClose = (e) => {
     e.preventDefault();
     console.log('Close');
-    setIsVisible(false);
+    setIsVisible(false);                            
   };
 
   return (
