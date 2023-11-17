@@ -25,11 +25,11 @@ array[1..K] of int: R;       %Demanda de reserva para cada intervalo.
 par float: P_max = max(i in 1..J)(P_sup[i]);  %Cota superior de la potencia, se puede ver como M.
 %-------------------------------- VARIABLES --------------------------------------
 array[1..K+1, 1..J] of var int: P;         %Potencias generadas por cada utpee en cada intervalo, incluye k=0.
-array[1..K+1, 1..J] of var bool: Op;       %Indicador de utpee encendida en cada intervalo, incluye k=0.
-array[1..K, 1..J] of var bool: amp;        %Indicador de ampliacion de potencia dentro de los limites.
-array[1..K, 1..J] of var bool: red;        %Indicador de reduccion de potencia dentro de los limites.
-array[1..K, 1..J] of var bool: encendido;  %Indica si la utpee j se ha encendido en el intervalo k. 
-array[1..K, 1..J] of var bool: apagado;    %Indica si la utpee j se ha apagado en el intervalo k.
+array[1..K+1, 1..J] of var 0..1: Op;       %Indicador de utpee encendida en cada intervalo, incluye k=0.
+array[1..K, 1..J] of var 0..1: amp;        %Indicador de ampliacion de potencia dentro de los limites.
+array[1..K, 1..J] of var 0..1: red;        %Indicador de reduccion de potencia dentro de los limites.
+array[1..K, 1..J] of var 0..1: encendido;  %Indica si la utpee j se ha encendido en el intervalo k. 
+array[1..K, 1..J] of var 0..1: apagado;    %Indica si la utpee j se ha apagado en el intervalo k.
 array[1..K, 1..J] of var float: C;         %Costo de cada utpee en cada intervalo.
 var float: costoTotal;                     %Costo total de operacion en el horizonte de planificacion.
 %------------------------------ RESTRICCIONES ------------------------------------
@@ -38,16 +38,18 @@ constraint forall(j in 1..J)(Op[1,j] = G[j]);
 constraint forall(j in 1..J)(P[1,j] = P0[j]);
 
 %Restricciones de encendido
-constraint forall(k in 2..K+1, j in 1..J where Op[k-1,j] = 0 /\ Op[k,j] = 1)(encendido[k-1,j] = 1);
-%constraint forall(k in 2..K+1, j in 1..J where Op[k-1,j] = 1 \/ Op[k,j] = 0)(encendido[k-1,j] = 0);
+constraint forall(k in 2..K+1, j in 1..J)(Op[k-1,j] + (1-Op[k,j]) + encendido[k-1,j] >= 1);
+constraint forall(k in 2..K+1, j in 1..J)((1-Op[k-1,j]) + (1-encendido[k-1,j]) >= 1);
+constraint forall(k in 2..K+1, j in 1..J)((Op[k,j]) + (1-encendido[k-1,j]) >= 1);
 
 %Restricciones de apagado
-constraint forall(k in 2..K+1, j in 1..J where Op[k-1,j] = 1 /\ Op[k,j] = 0)(apagado[k-1,j] = 1);
-%constraint forall(k in 2..K+1, j in 1..J where Op[k-1,j] = 0 \/ Op[k,j] = 1)(apagado[k-1,j] = 0);
+constraint forall(k in 2..K+1, j in 1..J)((1-Op[k-1,j]) + Op[k,j] + apagado[k-1,j] >= 1);
+constraint forall(k in 2..K+1, j in 1..J)((Op[k-1,j]) + (1-apagado[k-1,j]) >= 1);
+constraint forall(k in 2..K+1, j in 1..J)((1-Op[k,j]) + (1-apagado[k-1,j]) >= 1);
 
 %Restricciones de operatividad.  
-constraint forall(k in 2..K+1, j in 1..J where P[k,j] > 0)(Op[k,j] = 1); 
-constraint forall(k in 2..K+1, j in 1..J where apagado[k-1,j] = 1)(Op[k,j] = 0);             
+constraint forall(k in 2..K+1, j in 1..J)((P[k,j] < 1) + Op[k,j] >= 1); 
+constraint forall(k in 2..K+1, j in 1..J)((1-apagado[k-1,j]) + (1-Op[k,j]) >= 1);             
 
 %No negatividad
 constraint forall(k in 1..K+1, j in 1..J)(P[k,j] >= 0);
