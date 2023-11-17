@@ -1,10 +1,10 @@
 from minizinc import Instance, Model, Solver
 
-def PUEnTe(dzn_file_path):
+def PUEnTe(dzn_file_path, solver):
     # Load model from file
     model = Model("./PUEnTe/PUEnTe.mzn")
     # Find the MiniZinc solver configuration
-    solver = Solver.lookup("coin-bc")
+    solver = Solver.lookup(solver)
     
     # Create an Instance of the model
     instance = Instance(solver, model)

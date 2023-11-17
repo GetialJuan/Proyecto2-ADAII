@@ -14,11 +14,12 @@ def solve_PUEnTe():
         
         data = body['data']
         filename = body['filename']
+        solver = body['solver']
         file_path = f"./PUEnTe/dzn_files/{filename}.dzn"
         
         write_json_to_dzn(data, file_path)
         print("File written")
-        result = PUEnTe(file_path)
+        result = PUEnTe(file_path, solver)
         
         return jsonify({"result":result, "filename":filename}), 200
     except Exception as e:

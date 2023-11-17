@@ -1,7 +1,7 @@
 import axios from 'axios';
 const api_url = 'http://127.0.0.1:5000'
 
-export const solve_puente = async (data, filename) => {
+export const solve_puente = async (data, filename, solver) => {
 
     const config = {
         headers: {
@@ -9,7 +9,7 @@ export const solve_puente = async (data, filename) => {
         }
     };
 
-    const body = JSON.stringify({data, filename});
+    const body = JSON.stringify({data, filename, solver});
 
     try {
         const response = await axios.post(`${api_url}/solve_puente`, body, config);
