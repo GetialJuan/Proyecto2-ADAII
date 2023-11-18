@@ -2,6 +2,9 @@
 El Problema de la Planificacion de Unidades de Energıa Termica
 
 # Requirimientos 
+- MiniZinc
+  https://www.minizinc.org/doc-2.8.0/en/installation.html
+  
 - Python
   https://www.python.org/downloads/
 
