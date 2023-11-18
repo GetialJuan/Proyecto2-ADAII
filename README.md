@@ -3,9 +3,18 @@ El Problema de la Planificacion de Unidades de Energıa Termica
 
 # Requirimientos 
 - Python
-- NodeJs
+  https://www.python.org/downloads/
+
 - pip
+  https://pypi.org/project/pip/
+  
+- NodeJs
+  https://nodejs.org/en/download/current
+
 - npm
+  https://docs.npmjs.com/downloading-and-installing-node-js-and-npm
+  
+
 
 # INSTRUCCIONES PARA EJECUTAR LA GUI
 1. Clone el repositorio
