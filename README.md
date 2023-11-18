@@ -22,9 +22,11 @@ El Problema de la Planificacion de Unidades de Energıa Termica
 ```
 pip install -r requirements.txt   
 ```
+*cambie pip por pip3 segun su caso*
 ```
 python main.py
 ```
+*cambie python por python3 segun su caso*
 3. Entre a la carpeta client y ejecute los siguientes comandos:
 ```
 npm install   
