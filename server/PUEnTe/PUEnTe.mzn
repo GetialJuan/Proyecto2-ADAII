@@ -4,8 +4,6 @@
 %  - Mauricio Munoz Gutierrez.
 %  - Paul Rodrigo Rojas Guerrero.
 %  - Juan Sebastian Getial Getial.
-%  - Nicolas Fernando Hueras Cadavid.
-
 %-------------------------------- PARAMETROS --------------------------------------
 par int: J;                  %Numero de utpees.
 par int: K;                  %Numero de intervalos.
@@ -48,8 +46,7 @@ constraint forall(k in 2..K+1, j in 1..J)((Op[k-1,j]) + (1-apagado[k-1,j]) >= 1)
 constraint forall(k in 2..K+1, j in 1..J)((1-Op[k,j]) + (1-apagado[k-1,j]) >= 1);
 
 %Restricciones de operatividad.  
-constraint forall(k in 2..K+1, j in 1..J)((P[k,j] < 1) + Op[k,j] >= 1); 
-constraint forall(k in 2..K+1, j in 1..J)((1-apagado[k-1,j]) + (1-Op[k,j]) >= 1);             
+constraint forall(k in 2..K+1, j in 1..J)((P[k,j] < 1) + Op[k,j] >= 1);         
 
 %No negatividad
 constraint forall(k in 1..K+1, j in 1..J)(P[k,j] >= 0);
