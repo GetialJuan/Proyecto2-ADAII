@@ -13,6 +13,7 @@ const MainCard = () => {
     const [dataInput, setDataInput] = useState({})
     const [filename, setFilename] = useState("")
     const [dataOutput, setDataOutput] = useState({})
+    const [noSolution, setNoSolution] = useState(false)
 
     const solverOptions = ["coin-bc", "gecode"]
     const [solver, setSolver] = useState(solverOptions[0])
@@ -28,8 +29,13 @@ const MainCard = () => {
             const { data, error } = await solve_puente(dataInput, filename, solver)
             setAlert({ show: error, message: "Failed", type: "error" })
             if (!error) {
-                console.log(JSON.stringify(data.result))
-                setDataOutput(data.result)
+                if (JSON.stringify(data.result) === '{"message":"No se encontró solución"}') {
+                    setNoSolution(true)
+                }
+                else {
+                    setDataOutput(data.result)
+                }
+
             }
             else {
                 console.log(data)
@@ -42,6 +48,7 @@ const MainCard = () => {
         const file = e.target.files[0]
         setFileInput(file)
         setDataOutput({})
+        setNoSolution(false)
         if (file != null) {
             setAlert({ show: false, message: "", type: "" })
             setFilename(file.name.split(".")[0])
@@ -61,7 +68,7 @@ const MainCard = () => {
         <div>
             <div className="p-5">
                 {alert.show && alert.type === "error" && <FailedAlert message={alert.message} />}
-                
+
             </div>
 
             <div className="isolate bg-white px-6 py-24 sm:py-32 lg:px-8">
@@ -141,6 +148,15 @@ const MainCard = () => {
                                 {dataOutput['costoTotal'] && <p className="block text-sm text-gray-500">{dataOutput['costoTotal']}</p>}
                             </div>
                         </div>
+
+                        {noSolution &&
+                            <div className="bg-orange-500 rounded p-4 flex flex-row">
+                                <div className="mx-2">
+                                    No se encontro solucion
+                                </div>
+                            </div>
+                        }
+
                     </div>
 
                     <div className="mt-10">
